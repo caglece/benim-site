@@ -3,36 +3,371 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Örnek Kafe</title>
+  <title>Gigi’s Cafe — Didim</title>
+
+  <!-- Yazı tipleri (Google Fonts) -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind: class="..." içindeki kısa kodlarla (mb-4, px-5 gibi) tasarım yapmamızı sağlayan araç -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+  <!-- Kendi CSS'imiz: renkler, animasyonlar, özel şekiller -->
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; color: #333; }
-    header { background: #6f4e37; color: white; text-align: center; padding: 60px 20px; }
-    section { max-width: 700px; margin: 40px auto; padding: 0 20px; }
-    h2 { color: #6f4e37; }
-    .urun { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding: 8px 0; }
-    footer { background: #333; color: white; text-align: center; padding: 20px; }
+    :root{--paper:#fbf7ed;--ink:#292a27;--olive:#536347;--sand:#eee2cf;--clay:#a95137;--amber:#d99024;--charcoal:#292a27}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;width:100%;font-family:"DM Sans",sans-serif;color:var(--ink)}
+    h1,h2,h3{font-family:"Fraunces",serif;font-weight:500;letter-spacing:-.035em}
+    a,button{transition:transform .2s ease,background .2s ease,color .2s ease}
+    a:hover,button:hover{transform:translateY(-2px)}
+    :focus-visible{outline:3px solid var(--clay);outline-offset:4px}
+    .paper{background-image:repeating-linear-gradient(0deg,transparent 0 3px,rgba(71,63,39,.018) 4px 5px)}
+    .pill{border-radius:999px}
+    .organic{border-radius:48% 48% 8% 8% / 22% 22% 8% 8%}
+    .reveal{animation:rise .75s both}
+    .delay-1{animation-delay:.12s}
+    @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .modal-backdrop{background:rgba(24,36,27,.72)}
+    [hidden]{display:none!important}
+    @media(max-width:767px){.organic{border-radius:42% 42% 6% 6% / 15% 15% 6% 6%}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{animation:none}a,button{transition:none}}
   </style>
 </head>
-<body>
-  <header>
-    <h1>Örnek Kafe</h1>
-    <p>Taze kahve, ev yapımı tatlılar</p>
+
+<body class="paper w-full" style="background: rgb(251, 247, 237);">
+
+  <!-- ================= ÜST MENÜ ================= -->
+  <header class="sticky top-0 z-40 border-b border-[#d7b58d] bg-[#fbf7ed]/95 backdrop-blur" style="background: rgb(251, 247, 237);">
+    <nav aria-label="Ana navigasyon" class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-5 py-4 md:px-10">
+
+      <!-- Logo ve mekân adı -->
+      <a href="#ust" class="flex shrink-0 items-center gap-2" aria-label="Gigi’s Cafe, sayfa başına dön">
+        <svg aria-hidden="true" width="37" height="37" viewBox="0 0 40 40" fill="none"><circle cx="29" cy="10" r="5" fill="#b76145"></circle><path d="M7 18h22v5a11 11 0 0 1-22 0v-5ZM29 19h3a5 5 0 0 1 0 10h-5M8 34h22" stroke="#526044" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span class="text-[23px] font-semibold tracking-tight" style="color: rgb(39, 55, 43); font-weight: 600; font-size: 16px;">Gigi’s Cafe</span>
+      </a>
+
+      <!-- Bilgisayar ekranındaki menü bağlantıları (href="#menu" = sayfada id="menu" olan yere git) -->
+      <div class="hidden items-center gap-9 md:flex">
+        <a href="#menu" class="font-medium" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Menü</a>
+        <a href="#mekan" class="font-medium" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Mekân</a>
+        <a href="#magaza" class="font-medium" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Mağaza</a>
+      </div>
+
+      <!-- Sağdaki turuncu buton -->
+      <a href="#menu" class="pill hidden px-6 py-3 font-semibold md:inline-flex" style="background: rgb(169, 81, 55); color: rgb(255, 255, 255); font-weight: 400; font-size: 16px;">Menüyü Keşfet</a>
+
+      <!-- Telefonda görünen üç çizgi (hamburger) düğmesi -->
+      <button id="mobile-toggle" type="button" aria-label="Mobil menüyü aç" aria-controls="mobile-nav" aria-expanded="false" class="rounded-xl border border-[#a9ad9e] p-3 md:hidden">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
+    </nav>
+
+    <!-- Telefonda düğmeye basınca açılan menü (başta gizli: hidden) -->
+    <nav id="mobile-nav" aria-label="Mobil navigasyon" hidden class="border-t border-[#ddd7c9] px-6 py-5 md:hidden">
+      <div class="flex flex-col gap-5">
+        <a href="#menu" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Menü</a>
+        <a href="#mekan" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Mekân</a>
+        <a href="#magaza" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Mağaza</a>
+        <a href="#menu" class="pill w-fit px-5 py-3 font-semibold" style="background: rgb(169, 81, 55); color: rgb(255, 255, 255); font-weight: 400; font-size: 16px;">Menüyü Keşfet</a>
+      </div>
+    </nav>
   </header>
 
-  <section>
-    <h2>Menü</h2>
-    <div class="urun"><span>Filtre Kahve</span><span>80 TL</span></div>
-    <div class="urun"><span>Latte</span><span>110 TL</span></div>
-    <div class="urun"><span>Cheesecake</span><span>140 TL</span></div>
-  </section>
+  <main id="ust">
 
-  <section>
-    <h2>Çalışma Saatleri</h2>
-    <p>Her gün 08:00 - 22:00</p>
-  </section>
+    <!-- ================= GİRİŞ BÖLÜMÜ (HERO) ================= -->
+    <section class="w-full overflow-hidden" style="background: rgb(243, 228, 209);">
+      <div class="mx-auto grid max-w-7xl items-center gap-10 px-5 py-14 md:grid-cols-[.95fr_1.05fr] md:gap-14 md:px-10 md:py-24">
 
-  <footer>
-    <p>İletişim: 0555 000 00 00</p>
+        <!-- Sol taraf: yazılar ve butonlar -->
+        <div class="reveal">
+          <p class="mb-5 font-semibold uppercase tracking-[.23em]" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 13px;">DİDİM • EGE’DEN BİR MERHABA</p>
+          <h1 class="max-w-[630px] text-[clamp(3.3rem,6vw,6rem)] leading-[1.07]" style="color: rgb(39, 55, 43); font-weight: 500; font-size: 32px;">Didim’de güne, iyi kahveyle başla.</h1>
+          <p class="mt-7 max-w-lg leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 18px;">Deniz havası, yavaşlayan zaman ve özenle hazırlanan bir fincan kahve. Gigi’s Cafe’de sahil kasabasının sıcaklığına yer aç.</p>
+          <div class="mt-9 flex flex-wrap gap-3">
+            <a href="#menu" class="pill px-7 py-4 font-semibold" style="background: rgb(169, 81, 55); color: rgb(255, 255, 255); font-weight: 400; font-size: 16px;">Menüyü İncele</a>
+            <a href="#magaza" class="pill border border-[#526044] px-7 py-4 font-semibold" style="color: rgb(138, 72, 47); font-weight: 400; font-size: 16px;">Mağazayı Keşfet</a>
+          </div>
+        </div>
+
+        <!-- Sağ taraf: büyük fotoğraf -->
+        <div class="reveal delay-1 relative">
+          <div class="absolute -right-4 -top-4 h-36 w-36 rounded-full bg-[#d99024] opacity-60 blur-2xl"></div>
+          <img loading="lazy" class="organic relative h-[430px] w-full object-cover shadow-[0_25px_65px_rgba(44,49,31,.15)] md:h-[590px]" src="https://images.pexels.com/photos/2074130/pexels-photo-2074130.jpeg?auto=compress&cs=tinysrgb&w=1280" alt="Aydınlık açık hava kafesinde kahve keyfi">
+          <span class="absolute bottom-5 left-5 rounded-full bg-[#faf8f2] px-5 py-3 text-sm font-medium shadow-lg" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Bir fincan, biraz Ege.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ÖNE ÇIKANLAR (3 kart) ================= -->
+    <section id="onecikanlar" class="w-full scroll-mt-24 px-5 py-20 md:px-10" style="background: rgb(250, 248, 242);">
+      <div class="mx-auto max-w-7xl">
+        <p class="mb-3 uppercase tracking-[.2em]" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 13px;">GİGİ’S’TEN SEÇKİLER</p>
+        <h2 class="mb-10 text-[clamp(2.4rem,4vw,4rem)]" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 24px;">Günün güzel tarafı</h2>
+
+        <div class="grid gap-5 md:grid-cols-3">
+
+          <!-- Kart 1: Kahve -->
+          <a href="#menu" class="group block overflow-hidden rounded-[28px]" style="background: rgb(255, 255, 255);">
+            <img loading="lazy" class="h-60 w-full object-cover" src="https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Seramik fincanda süt köpüklü kahve">
+            <div class="p-7">
+              <p class="mb-2 text-sm uppercase tracking-widest" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 16px;">KAHVE</p>
+              <h3 class="mb-3" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Özenle hazırlanan kahveler</h3>
+              <p class="leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">İlk yudumdan son sohbete eşlik eden sıcak bir mola.</p>
+              <span class="mt-5 inline-block font-semibold" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Menüde keşfet ↗</span>
+            </div>
+          </a>
+
+          <!-- Kart 2: Tatlı -->
+          <a href="#menu" class="group block overflow-hidden rounded-[28px]" style="background: rgb(255, 255, 255);">
+            <img loading="lazy" class="h-60 w-full object-cover" src="https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Kahve yanında servis edilen çikolatalı tatlı">
+            <div class="p-7">
+              <p class="mb-2 text-sm uppercase tracking-widest" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 16px;">TATLI</p>
+              <h3 class="mb-3" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Tatlı bir ara</h3>
+              <p class="leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Günün temposuna küçük ve keyifli bir virgül.</p>
+              <span class="mt-5 inline-block font-semibold" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Menüde keşfet ↗</span>
+            </div>
+          </a>
+
+          <!-- Kart 3: Kahvaltı -->
+          <a href="#menu" class="group block overflow-hidden rounded-[28px]" style="background: rgb(255, 255, 255);">
+            <img loading="lazy" class="h-60 w-full object-cover" src="https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Taze malzemelerle hazırlanmış renkli kahvaltı tabağı">
+            <div class="p-7">
+              <p class="mb-2 text-sm uppercase tracking-widest" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 16px;">KAHVALTI</p>
+              <h3 class="mb-3" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Uzun sabahlar</h3>
+              <p class="leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Acele etmeden, sohbetle başlayan sofralar için.</p>
+              <span class="mt-5 inline-block font-semibold" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Menüde keşfet ↗</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MEKÂN ================= -->
+    <section id="mekan" class="w-full scroll-mt-24 px-5 py-20 md:px-10" style="background: rgb(234, 236, 227);">
+      <div class="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
+
+        <!-- Sol: 3 fotoğraf -->
+        <div class="grid grid-cols-2 gap-3">
+          <img loading="lazy" class="col-span-2 h-72 w-full rounded-[32px] object-cover" src="https://images.pexels.com/photos/1855214/pexels-photo-1855214.jpeg?auto=compress&cs=tinysrgb&w=1280" alt="Doğal ışık alan sıcak ve rahat kafe iç mekânı">
+          <img loading="lazy" class="h-48 w-full rounded-[24px] object-cover md:h-60" src="https://images.pexels.com/photos/39994359/pexels-photo-39994359.jpeg" alt="Baristanın kahve hazırladığı an">
+          <img loading="lazy" class="h-48 w-full rounded-[24px] object-cover md:h-60" src="https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Açık havada oturma alanı olan ferah kafe">
+        </div>
+
+        <!-- Sağ: yazılar -->
+        <div class="lg:pl-8">
+          <p class="mb-4 uppercase tracking-[.2em]" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 13px;">MEKÂNIN RUHU</p>
+          <h2 class="text-[clamp(2.7rem,4vw,4.5rem)] leading-tight" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 24px;">Gigi’s’te buluşalım</h2>
+          <p class="mt-7 max-w-lg leading-loose" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 18px;">Didim’in sakin ritmine yakışan bir buluşma noktası hayal edin: kahvenin hazırlandığı tezgâh, içeri süzülen gün ışığı ve açık havada uzayan sohbetler. Gigi’s Cafe’de her an biraz daha yavaş, biraz daha birlikte.</p>
+          <a href="#ziyaret" class="mt-8 inline-block border-b-2 border-current pb-2 font-semibold" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Bizi ziyaret et ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MAĞAZA (4 ürün, tıklayınca pencere açılır) ================= -->
+    <section id="magaza" class="w-full scroll-mt-24 px-5 py-20 md:px-10" style="background: rgb(241, 223, 201);">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-10 max-w-2xl">
+          <p class="mb-3 uppercase tracking-[.2em]" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 13px;">GİGİ’S MAĞAZA</p>
+          <h2 class="text-[clamp(2.5rem,4vw,4rem)]" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 24px;">Gigi’s ruhunu yanına al</h2>
+          <p class="mt-4 leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Kahve ritüelinden ilham alan ürün fikirlerimizi keşfet. Ürünlerin satışa sunulması ve bulunabilirliği henüz doğrulanmamıştır.</p>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- data-modal="beans" = JavaScript bu düğmeye basılınca id="detail-beans" olan yazıyı gösterir -->
+          <button type="button" data-modal="beans" class="overflow-hidden rounded-[25px] text-left" style="background: rgb(255, 255, 255);">
+            <img loading="lazy" class="h-52 w-full object-cover" src="https://images.pexels.com/photos/1695052/pexels-photo-1695052.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Kavrulmuş kahve çekirdekleri">
+            <span class="block p-5">
+              <span class="block font-semibold" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Kahve çekirdeği</span>
+              <span class="mt-2 block text-sm" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Yakında mağazada · İncele ↗</span>
+            </span>
+          </button>
+
+          <button type="button" data-modal="mug" class="overflow-hidden rounded-[25px] text-left" style="background: rgb(255, 255, 255);">
+            <img loading="lazy" class="h-52 w-full object-cover" src="https://images.pexels.com/photos/1566308/pexels-photo-1566308.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Sade seramik kahve kupası">
+            <span class="block p-5">
+              <span class="block font-semibold" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Günlük kupa</span>
+              <span class="mt-2 block text-sm" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Yakında mağazada · İncele ↗</span>
+            </span>
+          </button>
+
+          <button type="button" data-modal="tote" class="overflow-hidden rounded-[25px] text-left" style="background: rgb(255, 255, 255);">
+            <img loading="lazy" class="h-52 w-full object-cover" src="https://images.pexels.com/photos/3738089/pexels-photo-3738089.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Doğal kumaştan bez çanta">
+            <span class="block p-5">
+              <span class="block font-semibold" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Bez çanta</span>
+              <span class="mt-2 block text-sm" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Yakında mağazada · İncele ↗</span>
+            </span>
+          </button>
+
+          <button type="button" data-modal="selection" class="overflow-hidden rounded-[25px] text-left" style="background: rgb(255, 255, 255);">
+            <img loading="lazy" class="h-52 w-full object-cover" src="https://images.pexels.com/photos/585750/pexels-photo-585750.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Kahve ve günlük yaşam için seçilmiş aksesuarlar">
+            <span class="block p-5">
+              <span class="block font-semibold" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 16px;">Gigi’s seçkisi</span>
+              <span class="mt-2 block text-sm" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Yakında mağazada · İncele ↗</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MENÜ (3 sütun) ================= -->
+    <section id="menu" class="w-full scroll-mt-24 px-5 py-20 md:px-10" style="background: rgb(250, 248, 242);">
+      <div class="mx-auto max-w-7xl">
+        <p class="mb-3 uppercase tracking-[.2em]" style="color: rgb(151, 84, 62); font-weight: 400; font-size: 13px;">MENÜDEN BİR BAKIŞ</p>
+        <h2 class="mb-4 text-[clamp(2.5rem,4vw,4rem)]" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 24px;">Keyfine göre bir mola</h2>
+        <p class="mb-10 max-w-xl leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Aşağıdaki başlıklar menü önizlemesidir; güncel seçenekler için kafe menüsünü kontrol edin.</p>
+
+        <div class="grid gap-5 md:grid-cols-3">
+
+          <!-- Sütun 1: Sıcak içecekler. Yeni ürün eklemek için bir <li> satırını kopyala. -->
+          <article class="rounded-[28px] p-7" style="background: rgb(240, 237, 228);">
+            <h3 class="mb-6" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Sıcak içecekler</h3>
+            <ul class="space-y-4">
+              <li class="border-b border-[#d7d2c6] pb-3" style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Espresso</li>
+              <li class="border-b border-[#d7d2c6] pb-3" style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Cappuccino</li>
+              <li style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Filtre kahve</li>
+            </ul>
+          </article>
+
+          <!-- Sütun 2: Soğuk içecekler -->
+          <article class="rounded-[28px] p-7" style="background: rgb(240, 237, 228);">
+            <h3 class="mb-6" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Soğuk içecekler</h3>
+            <ul class="space-y-4">
+              <li class="border-b border-[#d7d2c6] pb-3" style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Buzlu latte</li>
+              <li class="border-b border-[#d7d2c6] pb-3" style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Cold brew</li>
+              <li style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Ev yapımı limonata</li>
+            </ul>
+          </article>
+
+          <!-- Sütun 3: Mutfaktan seçkiler -->
+          <article class="rounded-[28px] p-7" style="background: rgb(240, 237, 228);">
+            <h3 class="mb-6" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Mutfaktan seçkiler</h3>
+            <ul class="space-y-4">
+              <li class="border-b border-[#d7d2c6] pb-3" style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Kahvaltı tabağı</li>
+              <li class="border-b border-[#d7d2c6] pb-3" style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Günün tatlısı</li>
+              <li style="color: rgb(52, 69, 53); font-weight: 400; font-size: 16px;">Taze atıştırmalıklar</li>
+            </ul>
+          </article>
+        </div>
+
+        <p class="mt-7 text-sm" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Fiyat ve ürün bulunabilirliği için güncel menüye bakınız.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= ALT BÖLÜM (iletişim) ================= -->
+  <footer id="ziyaret" class="w-full scroll-mt-24 px-5 py-16 md:px-10" style="background: rgb(53, 71, 53);">
+    <div class="mx-auto grid max-w-7xl gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <h2 class="mb-4" style="color: rgb(255, 255, 255); font-weight: 400; font-size: 24px;">Bizi ziyaret et</h2>
+        <p style="color: rgb(244, 238, 226); font-weight: 400; font-size: 16px;">Didim, Aydın</p>
+        <p class="mt-5 leading-relaxed" style="color: rgb(244, 238, 226); font-weight: 400; font-size: 16px;">Bir kahve molasında görüşmek üzere.</p>
+      </div>
+      <div>
+        <h3 class="mb-4" style="color: rgb(255, 255, 255); font-weight: 400; font-size: 19px;">Çalışma saatleri</h3>
+        <!-- DOLDURULACAK: çalışma saatlerini yaz -->
+        <p class="leading-relaxed" style="color: rgb(244, 238, 226); font-weight: 400; font-size: 16px;">Düzenlenebilir alan: Güncel çalışma saatlerini buraya ekleyin.</p>
+      </div>
+      <div>
+        <h3 class="mb-4" style="color: rgb(255, 255, 255); font-weight: 400; font-size: 19px;">İletişim ve konum</h3>
+        <!-- DOLDURULACAK: adres ve telefon -->
+        <p class="leading-relaxed" style="color: rgb(244, 238, 226); font-weight: 400; font-size: 16px;">Düzenlenebilir alan: Açık adresi buraya ekleyin.</p>
+        <p class="mt-3 leading-relaxed" style="color: rgb(244, 238, 226); font-weight: 400; font-size: 16px;">Düzenlenebilir alan: Telefon veya e-posta bilgisini buraya ekleyin.</p>
+      </div>
+      <div>
+        <h3 class="mb-4" style="color: rgb(255, 255, 255); font-weight: 400; font-size: 19px;">Sosyal medya</h3>
+        <!-- DOLDURULACAK: sosyal medya hesabı -->
+        <p class="leading-relaxed" style="color: rgb(244, 238, 226); font-weight: 400; font-size: 16px;">Düzenlenebilir alan: Doğrulanmış sosyal medya hesabınızı buraya ekleyin.</p>
+      </div>
+    </div>
+    <div class="mx-auto mt-14 max-w-7xl border-t border-[#8c9785] pt-6">
+      <p class="text-sm" style="color: rgb(244, 238, 226); font-weight: 400; font-size: 16px;">Gigi’s Cafe · Didim’in ritminde.</p>
+    </div>
   </footer>
+
+  <!-- ================= ÜRÜN PENCERESİ (başta gizli) ================= -->
+  <div id="product-modal" hidden class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4" role="presentation">
+    <div role="dialog" aria-modal="true" aria-labelledby="modal-heading" class="w-full max-w-lg rounded-[30px] bg-[#faf8f2] p-7 shadow-2xl md:p-10">
+      <div class="flex items-start justify-between gap-4">
+        <h2 id="modal-heading" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 24px;">Ürünü keşfet</h2>
+        <button id="close-modal" type="button" class="pill shrink-0 px-4 py-2 font-semibold" style="background: rgb(169, 81, 55); color: rgb(255, 255, 255); font-weight: 400; font-size: 16px;">Kapat</button>
+      </div>
+
+      <div id="detail-beans" class="product-detail mt-6" hidden>
+        <h3 class="mb-3" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Kahve çekirdeği</h3>
+        <p class="leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Evdeki kahve molalarına eşlik etmesi düşünülen bir Gigi’s seçkisi. Çekirdek türü ve ürün ayrıntıları henüz paylaşılmadı.</p>
+      </div>
+      <div id="detail-mug" class="product-detail mt-6" hidden>
+        <h3 class="mb-3" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Günlük kupa</h3>
+        <p class="leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Yavaş sabahlardan ilham alan sade bir kupa fikri. Malzeme ve ürün ayrıntıları henüz paylaşılmadı.</p>
+      </div>
+      <div id="detail-tote" class="product-detail mt-6" hidden>
+        <h3 class="mb-3" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Bez çanta</h3>
+        <p class="leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Günlük gezintilere eşlik etmesi düşünülen bez çanta fikri. Ürün ayrıntıları henüz paylaşılmadı.</p>
+      </div>
+      <div id="detail-selection" class="product-detail mt-6" hidden>
+        <h3 class="mb-3" style="color: rgb(39, 55, 43); font-weight: 400; font-size: 19px;">Gigi’s seçkisi</h3>
+        <p class="leading-relaxed" style="color: rgb(67, 80, 67); font-weight: 400; font-size: 16px;">Kahve keyfi ve sahil kasabası yaşamından ilham alan seçkili ürünler için ayrılmış bir alan. Ürünler henüz duyurulmadı.</p>
+      </div>
+
+      <p class="mt-7 border-t border-[#ddd7c9] pt-5 text-sm" style="color: rgb(82, 96, 68); font-weight: 400; font-size: 16px;">Yakında mağazada · Bu sayfada satış, stok veya fiyat bilgisi sunulmaz.</p>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT: sayfaya hareket kazandıran kısım ================= -->
+  <script>
+    // --- Telefondaki menü düğmesi ---
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+
+    function closeMobile() {
+      mobileNav.hidden = true;
+      mobileToggle.setAttribute('aria-expanded', 'false');
+      mobileToggle.setAttribute('aria-label', 'Mobil menüyü aç');
+    }
+
+    mobileToggle.addEventListener('click', () => {
+      const opening = mobileNav.hidden;
+      mobileNav.hidden = !opening;
+      mobileToggle.setAttribute('aria-expanded', String(opening));
+      mobileToggle.setAttribute('aria-label', opening ? 'Mobil menüyü kapat' : 'Mobil menüyü aç');
+    });
+
+    // Menüdeki bir bağlantıya tıklayınca menü kapansın
+    mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMobile));
+
+    // --- Mağaza ürün penceresi ---
+    const modal = document.getElementById('product-modal');
+    const closeButton = document.getElementById('close-modal');
+    let opener = null;
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      modal.querySelectorAll('.product-detail').forEach(detail => detail.hidden = true);
+      if (opener) opener.focus();
+    }
+
+    // data-modal="..." olan her düğmeye basılınca ilgili ürünün yazısını göster
+    document.querySelectorAll('[data-modal]').forEach(button => button.addEventListener('click', () => {
+      opener = button;
+      const detail = document.getElementById('detail-' + button.dataset.modal);
+      modal.querySelectorAll('.product-detail').forEach(panel => panel.hidden = panel !== detail);
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      closeButton.focus();
+    }));
+
+    closeButton.addEventListener('click', closeModal);
+    modal.addEventListener('click', event => { if (event.target === modal) closeModal(); });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !modal.hidden) closeModal();
+      if (event.key === 'Escape' && !mobileNav.hidden) closeMobile();
+      if (event.key === 'Tab' && !modal.hidden) {
+        event.preventDefault();
+        closeButton.focus();
+      }
+    });
+  </script>
 </body>
 </html>
